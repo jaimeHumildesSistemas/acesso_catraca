@@ -24,7 +24,11 @@ class QRCodeController extends Controller
 {
     $codigo = Str::uuid()->toString();
 
-    QRCode::create(['code' => $codigo]);
+    // Gera o QR Code e associa ao usuário autenticado
+    QRCode::create([
+        'code' => $codigo,
+        'user_id' => auth()->id(), // Corrige o erro do user_id
+    ]);
 
     $url = url('/api/catraca/verificar/' . $codigo);
 
@@ -38,6 +42,7 @@ class QRCodeController extends Controller
 
     return view('qrcode.index', compact('qrCodeUrl', 'qrcodes', 'totalQRCodes', 'qrcodesUsados', 'qrcodesDisponiveis'));
 }
+
 
 
 

@@ -8,7 +8,8 @@ class QRCode extends Model
 {
     protected $table = 'qrcodes';
 
-    protected $fillable = ['code', 'used_at'];
+    // Adicione 'user_id' aqui:
+    protected $fillable = ['code', 'used_at', 'user_id'];
 
     public function isUsed()
     {
