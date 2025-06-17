@@ -7,6 +7,7 @@ use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\AcessoController;
 use App\Http\Controllers\TesteImageController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\FilialController;
 
 
 // use Illuminate\Support\Facades\Route;
@@ -43,4 +44,7 @@ Route::get('/liberar-catraca', function () {
 
 
 
+
+
+Route::resource('filiais', FilialController::class);
 

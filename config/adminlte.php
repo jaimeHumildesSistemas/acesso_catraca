@@ -392,6 +392,11 @@ return [
             'icon_color' => 'cyan',
             'url' => '#',
         ],
+        [
+            'text' => 'Filiais',
+            'url' => 'filiais',      // URL vai ser /filiais
+            'icon' => 'fas fa-building',   // Ícone font-awesome (pode trocar)
+        ],
     ],
 
     /*
