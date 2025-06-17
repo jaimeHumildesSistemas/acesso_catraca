@@ -19,6 +19,8 @@
                 <th>ID</th>
                 <th>Descrição</th>
                 <th>Valor</th>
+                <th>Nome do Usuário </th>
+                <th>Data </th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -28,14 +30,24 @@
                     <td>{{ $produto->idproduto }}</td>
                     <td>{{ $produto->descricao }}</td>
                     <td>R$ {{ number_format($produto->valor, 2, ',', '.') }}</td>
+                    <td>{{ optional($produto->userCriador)->name }}</td>
+
+                    <td>
+                        {{ $produto->data_ins ? \Carbon\Carbon::parse($produto->data_ins)->format('d-m-Y') : '' }}
+                    </td>
+
                     <td>
                         <a href="{{ route('produtos.edit', $produto->idproduto) }}" class="btn btn-primary btn-sm">Editar</a>
-                        <form action="{{ route('produtos.destroy', $produto->idproduto) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('produtos.destroy', $produto->idproduto) }}" method="POST"
+                            style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza?')">Excluir</button>
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Tem certeza?')">Excluir</button>
                         </form>
                     </td>
+
+
                 </tr>
             @endforeach
         </tbody>

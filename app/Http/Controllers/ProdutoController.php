@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Produto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProdutoController extends Controller
 {
     public function index()
     {
-        $produtos = Produto::all();
+        // Carrega também o nome dos usuários criador e atualizador
+        $produtos = Produto::with(['userCriador', 'userAtualizador'])->get();
         return view('produtos.index', compact('produtos'));
     }
 
@@ -28,6 +30,8 @@ class ProdutoController extends Controller
         Produto::create([
             'descricao' => $request->descricao,
             'valor' => $request->valor,
+            'user_ins' => Auth::id(),
+            'data_ins' => now(),
         ]);
 
         return redirect()->route('produtos.index')->with('success', 'Produto cadastrado com sucesso!');
@@ -50,6 +54,8 @@ class ProdutoController extends Controller
         $produto->update([
             'descricao' => $request->descricao,
             'valor' => $request->valor,
+            'user_upd' => Auth::id(),
+            'data_upd' => now(),
         ]);
 
         return redirect()->route('produtos.index')->with('success', 'Produto atualizado com sucesso!');

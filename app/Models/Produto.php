@@ -16,7 +16,21 @@ class Produto extends Model
     protected $keyType = 'int';
 
     protected $fillable = [
-        'descricao',
-        'valor',
-    ];
+    'descricao',
+    'valor',
+    'user_ins',
+    'data_ins',
+    'user_upd',
+    'data_upd',
+];
+public function userCriador()
+{
+    return $this->belongsTo(\App\Models\User::class, 'user_ins');
+}
+public function userAtualizador()
+{
+    return $this->belongsTo(\App\Models\User::class, 'user_upd');
+}
+
+
 }
