@@ -47,4 +47,8 @@ Route::get('/liberar-catraca', function () {
 
 
 Route::resource('filiais', FilialController::class);
+Route::resource('produtos', App\Http\Controllers\ProdutoController::class);
+
+
+
 

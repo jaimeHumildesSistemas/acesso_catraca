@@ -284,10 +284,14 @@
                     <p>Filiais</p>
                   </a>
                 </li>
-
-
+                <li class="nav-item">
+                  <a href="{{ route('produtos.index') }}"
+                    class="nav-link {{ request()->is('produtos*') ? 'active' : '' }}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Produtos</p>
+                  </a>
+                </li>
               </ul>
-
             </li>
         </nav>
         <!-- /.sidebar-menu -->
