@@ -8,6 +8,9 @@ use App\Http\Controllers\AcessoController;
 use App\Http\Controllers\TesteImageController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\FilialController;
+use App\Http\Controllers\FormaPagamentoController;
+use App\Http\Controllers\CaixaController;
+
 
 
 // use Illuminate\Support\Facades\Route;
@@ -43,11 +46,17 @@ Route::get('/liberar-catraca', function () {
 });
 
 
-
-
-
 Route::resource('filiais', FilialController::class);
 Route::resource('produtos', App\Http\Controllers\ProdutoController::class);
+Route::resource('formapagamento', FormaPagamentoController::class);
+
+
+Route::middleware(['auth'])->group(function() {
+    Route::get('/caixa', [CaixaController::class, 'index'])->name('caixa.index');
+    Route::post('/caixa/gerar-qrcode', [CaixaController::class, 'gerarQr'])->name('qrcode.gerar');
+});
+
+
 
 
 

@@ -30,6 +30,8 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -291,6 +293,13 @@
                     <p>Produtos</p>
                   </a>
                 </li>
+                <li class="nav-item">
+                  <a href="{{ route('formapagamento.index') }}" class="nav-link">
+                    <i class="fas fa-money-bill nav-icon"></i>
+                    <p>Formas de Pagamento</p>
+                  </a>
+                </li>
+
               </ul>
             </li>
         </nav>
@@ -379,10 +388,11 @@
         </div>
 
         <div class="text-end my-3">
-          <a href="{{ route('qrcode.gerar') }}" class="btn btn-primary">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalQrCode">
             <i class="bi bi-plus-circle"></i> Gerar Novo QR Code
-          </a>
+          </button>
         </div>
+
 
 
 
@@ -533,6 +543,10 @@
   <script src="vendor/adminlte/dist/js/demo.js"></script>
   <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
   <script src="vendor/adminlte/dist/js/pages/dashboard.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="{{ asset('js/modal_qrcode.js?v=1.01') }}"></script>
+  
 </body>
 
 </html>
