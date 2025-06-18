@@ -409,10 +409,7 @@
             @foreach ($qrcodes as $qr)
           <tr>
             <td>
-            <div id="qrcode-{{ $qr->id }}">
-              {!! QrCode::size(100)->generate('http://192.168.1.90/api/catraca/verificar/' . $qr->code) !!}
-
-            </div>
+            
             <button class="btn-custom" onclick="imprimirQRCode('qrcode-{{ $qr->id }}')">Imprimir</button>
             </td>
             <td>
