@@ -7,6 +7,11 @@ use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\AcessoController;
 use App\Http\Controllers\TesteImageController;
 use App\Http\Controllers\FilialController;
+<<<<<<< HEAD
+=======
+use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\FormaPagamentoController;
+>>>>>>> 7785d95 (Reenviando todos os arquivos para o repositório)
 
 // ROTA DE LOGIN
 Route::get('/login', [LoginController::class, 'login'])->name('login');
@@ -44,7 +49,11 @@ Route::middleware(['auth'])->group(function () {
     // Cadastros
     Route::resource('filiais', FilialController::class);
     Route::resource('produtos', ProdutoController::class);
+
+    Route::get('/formapagamento', [FormaPagamentoController::class, 'index'])->name('formapagamento.index');
+
 });
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 
@@ -65,3 +74,5 @@ Route::middleware(['auth'])->group(function() {
 
 =======
 >>>>>>> e55517d (modal)
+=======
+>>>>>>> 7785d95 (Reenviando todos os arquivos para o repositório)
