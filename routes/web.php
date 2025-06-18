@@ -7,13 +7,6 @@ use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\AcessoController;
 use App\Http\Controllers\TesteImageController;
 use App\Http\Controllers\FilialController;
-<<<<<<< HEAD
-use App\Http\Controllers\FormaPagamentoController;
-use App\Http\Controllers\CaixaController;
-
-=======
-use App\Http\Controllers\ProdutoController;
->>>>>>> e55517d (modal)
 
 // ROTA DE LOGIN
 Route::get('/login', [LoginController::class, 'login'])->name('login');
