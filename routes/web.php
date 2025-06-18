@@ -7,11 +7,7 @@ use App\Http\Controllers\QRCodeController;
 use App\Http\Controllers\AcessoController;
 use App\Http\Controllers\TesteImageController;
 use App\Http\Controllers\FilialController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\ProdutoController;
-use App\Http\Controllers\FormaPagamentoController;
->>>>>>> 7785d95 (Reenviando todos os arquivos para o repositório)
 
 // ROTA DE LOGIN
 Route::get('/login', [LoginController::class, 'login'])->name('login');
@@ -25,7 +21,7 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 // ROTAS PROTEGIDAS POR LOGIN
 Route::middleware(['auth'])->group(function () {
-    
+
     // Página inicial pós login
     Route::get('/qrcode', [QRCodeController::class, 'index'])->name('qrcode');
     Route::get('/qrcode/gerar', [QRCodeController::class, 'gerar'])->name('qrcode.gerar');
@@ -50,29 +46,4 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('filiais', FilialController::class);
     Route::resource('produtos', ProdutoController::class);
 
-    Route::get('/formapagamento', [FormaPagamentoController::class, 'index'])->name('formapagamento.index');
-
-});
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-
-Route::resource('filiais', FilialController::class);
-Route::resource('produtos', App\Http\Controllers\ProdutoController::class);
-Route::resource('formapagamento', FormaPagamentoController::class);
-
-
-Route::middleware(['auth'])->group(function() {
-    Route::get('/caixa', [CaixaController::class, 'index'])->name('caixa.index');
-    Route::post('/caixa/gerar-qrcode', [CaixaController::class, 'gerarQr'])->name('qrcode.gerar');
-});
-
-
-
-
-
-
-=======
->>>>>>> e55517d (modal)
-=======
->>>>>>> 7785d95 (Reenviando todos os arquivos para o repositório)
+}); // <-- fechamento do grupo de rotas
