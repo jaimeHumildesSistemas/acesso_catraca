@@ -8,6 +8,8 @@ use App\Http\Controllers\AcessoController;
 use App\Http\Controllers\TesteImageController;
 use App\Http\Controllers\FilialController;
 use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\FormaPagamentoController;
+
 
 // ROTA DE LOGIN
 Route::get('/login', [LoginController::class, 'login'])->name('login');
@@ -45,5 +47,6 @@ Route::middleware(['auth'])->group(function () {
     // Cadastros
     Route::resource('filiais', FilialController::class);
     Route::resource('produtos', ProdutoController::class);
+    Route::resource('formapagamento', FormaPagamentoController::class);
 
 }); // <-- fechamento do grupo de rotas
