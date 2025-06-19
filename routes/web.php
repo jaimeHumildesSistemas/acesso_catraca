@@ -9,7 +9,7 @@ use App\Http\Controllers\TesteImageController;
 use App\Http\Controllers\FilialController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\FormaPagamentoController;
-
+use App\Http\Controllers\CaixaHeaderController;
 
 // ROTA DE LOGIN
 Route::get('/login', [LoginController::class, 'login'])->name('login');
@@ -49,4 +49,13 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('produtos', ProdutoController::class);
     Route::resource('formapagamento', FormaPagamentoController::class);
 
-}); // <-- fechamento do grupo de rotas
+    // Rotas do CaixaHeader
+    Route::resource('caixa_header', CaixaHeaderController::class)->only(['index', 'show', 'create', 'store']);
+
+    // Rotas para abertura e fechamento de caixa
+    Route::get('/caixa/abrir', [CaixaHeaderController::class, 'abrir'])->name('caixa_header.abrir');
+    Route::post('/caixa/abrir', [CaixaHeaderController::class, 'abrirStore'])->name('caixa_header.abrir.store');
+
+    Route::get('/caixa/fechar', [CaixaHeaderController::class, 'fechar'])->name('caixa_header.fechar');
+    Route::post('/caixa/fechar', [CaixaHeaderController::class, 'fecharStore'])->name('caixa_header.fechar.store');
+});
