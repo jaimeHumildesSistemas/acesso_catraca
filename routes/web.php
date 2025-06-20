@@ -24,7 +24,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Página inicial pós login
     Route::get('/qrcode', [QRCodeController::class, 'index'])->name('qrcode');
-    Route::get('/qrcode/gerar', [QRCodeController::class, 'gerar'])->name('qrcode.gerar');
+    Route::post('/qrcode/gerar', [QRCodeController::class, 'gerar'])->name('qrcode.gerar');
 
     // Validação de acesso por QR Code
     Route::post('/acesso/validar', [AcessoController::class, 'validarQRCode'])->name('acesso.validar');
@@ -41,6 +41,10 @@ Route::middleware(['auth'])->group(function () {
         $response = Http::get('http://localhost:5000/liberar');
         return $response->json();
     });
+
+
+     // Forma de pagamento
+    Route::get('/formapagamento.index', [QRCodeController::class, 'index'])->name('formapagamento.index');
 
     // Cadastros
     Route::resource('filiais', FilialController::class);
