@@ -6,65 +6,79 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\QRCode;
 use App\Models\Produto;
+use App\Models\Filial;
+use App\Models\FormaPagamento;  // ← Adicione isso
 use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeGenerator;
 
 class QRCodeController extends Controller
 {
-   public function index()
-{
-    $qrcodes = QRCode::with(['user', 'produto'])->latest()->get();
-    $produtos = Produto::latest()->get();
-    $totalQRCodes = $qrcodes->count();
-    $qrcodesUsados = $qrcodes->whereNotNull('used_at')->count();
-    $qrcodesDisponiveis = $qrcodes->whereNull('used_at')->count();
+    public function index()
+    {
+        $qrcodes = QRCode::with(['user', 'produto', 'filial'])->latest()->get();
+        $produtos = Produto::latest()->get();
+        $filiais = Filial::all();
+        $formasPagamento = FormaPagamento::all();  // ← Pegando as formas de pagamento
 
-    return view('qrcode.index', compact(
-        'qrcodes',
-        'produtos',
-        'totalQRCodes',
-        'qrcodesUsados',
-        'qrcodesDisponiveis'
-    ));
-}
+        $totalQRCodes = $qrcodes->count();
+        $qrcodesUsados = $qrcodes->whereNotNull('used_at')->count();
+        $qrcodesDisponiveis = $qrcodes->whereNull('used_at')->count();
 
+        return view('qrcode.index', compact(
+            'qrcodes',
+            'produtos',
+            'filiais',
+            'formasPagamento',  // ← Passando para o Blade
+            'totalQRCodes',
+            'qrcodesUsados',
+            'qrcodesDisponiveis'
+        ));
+    }
 
+    public function gerar(Request $request)
+    {
+        try {
+            $request->validate([
+                'idfilial' => 'required|integer|exists:filiais,id',
+                'idproduto' => 'required|integer|exists:produtos,id',
+                'valor' => 'required|numeric',
+                'desconto' => 'nullable|numeric',
+                'acrescimo' => 'nullable|numeric',
+                'valorapagar' => 'required|numeric',
+                'formadepagamento' => 'required|string|max:255',
+            ]);
 
-public function gerar(Request $request)
-{
-    $codigo = Str::uuid()->toString();
+            $codigo = Str::uuid()->toString();
 
-    // Pega o ID do produto do formulário
-    $produtoId = $request->input('produto_id');
+            $qrcode = new QRCode();
+            $qrcode->code = $codigo;
+            $qrcode->user_id = auth()->id();
+            $qrcode->idfilial = $request->idfilial;
+            $qrcode->idproduto = $request->idproduto;
+            $qrcode->valor = $request->valor;
+            $qrcode->desconto = $request->desconto ?? 0;
+            $qrcode->acrescimo = $request->acrescimo ?? 0;
+            $qrcode->valorapagar = $request->valorapagar;
+            $qrcode->formadepagamento = $request->formadepagamento;
+            $qrcode->status = 'pendente';
+            $qrcode->save();
 
-    // Cria o QR Code associado ao usuário e ao produto
-    $qrcode = new QRCode();
-    $qrcode->code = $codigo;
-    $qrcode->user_id = auth()->id();
-    $qrcode->produto_id = $produtoId;
-    $qrcode->save();
-    // dd($qrcode); // Veja se foi salvo
+            $url = url('/api/catraca/verificar/' . $codigo);
 
+            $qrCodeImage = '<img src="data:image/png;base64,' . base64_encode(
+                QrCodeGenerator::format('png')->size(300)->generate($url)
+            ) . '" />';
 
-    $url = url('/api/catraca/verificar/' . $codigo);
+            return response()->json([
+                'success' => true,
+                'qrcode' => $qrCodeImage,
+            ]);
 
-    $qrCodeUrl = QrCodeGenerator::size(300)->generate($url);
-
-    $qrcodes = QRCode::latest()->get();
-    $produtos = Produto::latest()->get();
-    $totalQRCodes = $qrcodes->count();
-    $qrcodesUsados = $qrcodes->whereNotNull('used_at')->count();
-    $qrcodesDisponiveis = $qrcodes->whereNull('used_at')->count();
-
-   return redirect()->route('qrcode')->with([
-    'qrCodeUrl' => $qrCodeUrl,
-    'totalQRCodes' => $totalQRCodes,
-    'qrcodesUsados' => $qrcodesUsados,
-    'qrcodesDisponiveis' => $qrcodesDisponiveis,
-]);
-
-}
-
-
-
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao gerar QR Code: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
 }

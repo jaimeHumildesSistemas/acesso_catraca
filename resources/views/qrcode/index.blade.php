@@ -32,6 +32,7 @@
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+@vite(['resources/css/app.css', 'resources/css/custom.css', 'resources/js/app.js'])
 
 </head>
 
@@ -394,55 +395,116 @@
           </button>
 
         </div>
+<button class="btn btn-primary">Azul</button>
+<button class="btn btn-secondary">Grafite</button>
+<button class="btn btn-info">Laranja Queimado</button>
+<button class="btn btn-dark">Preto</button>
 
         <!-- Modal -->
         <!-- Modal -->
         <div class="modal fade" id="modalQrCode" tabindex="-1" aria-labelledby="modalQrCodeLabel" aria-hidden="true">
           <div class="modal-dialog">
-            <form method="POST" action="{{ route('qrcode.gerar') }}">
-              @csrf
+            <form id="formQrCode">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="modalQrCodeLabel">Gerar QR Code para Produto</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar">X</button>
+                  <h5 class="modal-title" id="modalQrCodeLabel">Gerar Novo QR Code</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
+                  @csrf
+
+                  <!-- Filial -->
                   <div class="mb-3">
-                    <label for="produto_id" class="form-label">Selecione o Produto</label>
-                    <select name="produto_id" id="produto_id" class="form-control" required>
-                      <option value="" disabled selected>Escolha um produto</option>
-                      @foreach ($produtos as $produto)
-              <option value="{{ $produto->idproduto }}">{{ $produto->descricao }}</option>
+                    <label for="idfilial" class="form-label">Filial</label>
+                    <select id="idfilial" name="idfilial" class="form-select" required>
+                      <option value="" disabled selected>Selecione a filial</option>
+                      @foreach($filiais as $filial)
+              <option value="{{ $filial->id }}">{{ $filial->nome }}</option>
             @endforeach
                     </select>
                   </div>
+
+                  <!-- Produto -->
+                  <div class="mb-3">
+                    <label for="idproduto" class="form-label">Produto</label>
+                    <select id="idproduto" name="idproduto" class="form-select" required>
+                      <option value="" disabled selected>Selecione o produto</option>
+                      @foreach($produtos as $produto)
+              <option value="{{ $produto->id }}" data-valor="{{ $produto->valor }}">
+              {{ $produto->nome }} - R$ {{ number_format($produto->valor, 2, ',', '.') }}
+              </option>
+            @endforeach
+                    </select>
+                  </div>
+
+                  <!-- Valor -->
+                  <div class="mb-3">
+                    <label for="valor" class="form-label">Valor</label>
+                    <input type="text" id="valor" name="valor" class="form-control" readonly>
+                  </div>
+
+                  <!-- Desconto -->
+                  <div class="mb-3">
+                    <label for="desconto" class="form-label">Desconto</label>
+                    <input type="number" id="desconto" name="desconto" class="form-control" value="0" min="0"
+                      step="0.01">
+                  </div>
+
+                  <!-- Acréscimo -->
+                  <div class="mb-3">
+                    <label for="acrescimo" class="form-label">Acréscimo</label>
+                    <input type="number" id="acrescimo" name="acrescimo" class="form-control" value="0" min="0"
+                      step="0.01">
+                  </div>
+
+                  <!-- Valor a pagar -->
+                  <div class="mb-3">
+                    <label for="valorapagar" class="form-label">Valor Total a Pagar</label>
+                    <input type="text" id="valorapagar" name="valorapagar" class="form-control" readonly>
+                  </div>
+
+                  <!-- Forma de Pagamento -->
+                  <div class="mb-3">
+                    <label for="formadepagamento" class="form-label">Forma de Pagamento</label>
+                    <select id="formadepagamento" name="formadepagamento" class="form-select" required>
+                      <option value="" disabled selected>Selecione a forma de pagamento</option>
+                      @foreach($formasPagamento as $forma)
+              <option value="{{ $forma->nome }}">{{ $forma->nome }}</option>
+            @endforeach
+                    </select>
+                  </div>
+
+                  <div id="resultadoQrCode" class="text-center"></div>
                 </div>
+
                 <div class="modal-footer">
-                  <button type="submit" class="btn btn-success">Gerar QR Code</button>
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Gerar</button>
                 </div>
               </div>
             </form>
+
           </div>
         </div>
-<!-- Modal de aviso caixa não aberto -->
-<div class="modal fade" id="modalAvisoCaixa" tabindex="-1" aria-labelledby="modalAvisoCaixaLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalAvisoCaixaLabel">Aviso</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-      </div>
-      <div class="modal-body">
-        Não existe caixa aberto ainda.
-      </div>
-      <div class="modal-footer">
-        <a href="{{ url('caixa/abrir') }}" class="btn btn-success">Abrir Caixa</a>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-      </div>
-    </div>
-  </div>
-</div>
+        <!-- Modal de aviso caixa não aberto -->
+        <div class="modal fade" id="modalAvisoCaixa" tabindex="-1" aria-labelledby="modalAvisoCaixaLabel"
+          aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalAvisoCaixaLabel">Aviso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+              </div>
+              <div class="modal-body">
+                Não existe caixa aberto ainda.
+              </div>
+              <div class="modal-footer">
+                <a href="{{ url('caixa/abrir') }}" class="btn btn-success">Abrir Caixa</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Fim Modal -->
         <table id="example2" class="table table-bordered table-hover">
@@ -572,28 +634,50 @@
     `);
       printWindow.document.close();
     }
-    $(document).ready(function() {
-  $('#btnAbrirModalQrCode').click(function(e) {
-    e.preventDefault();
+    $(document).ready(function () {
+      $('#btnAbrirModalQrCode').click(function (e) {
+        e.preventDefault();
 
-    $.ajax({
-      url: '/api/verificar-caixa-aberto',
-      method: 'GET',
-      success: function(response) {
-        if(response.aberto) {
-          $('#modalQrCode').modal('show');
-        } else {
-          $('#modalAvisoCaixa').modal('show');
-        }
-      },
-      error: function() {
-        alert('Erro ao verificar o caixa. Tente novamente.');
-      }
+        $.ajax({
+          url: '/api/verificar-caixa-aberto',
+          method: 'GET',
+          success: function (response) {
+            if (response.aberto) {
+              $('#modalQrCode').modal('show');
+            } else {
+              $('#modalAvisoCaixa').modal('show');
+            }
+          },
+          error: function () {
+            alert('Erro ao verificar o caixa. Tente novamente.');
+          }
+        });
+      });
     });
-  });
-});
 
   </script>
+  <script>
+  $(document).ready(function() {
+    $('#idproduto').on('change', function() {
+      const valor = $('option:selected', this).data('valor');
+      $('#valor').val(parseFloat(valor).toFixed(2));
+      calcularTotal();
+    });
+
+    $('#desconto, #acrescimo').on('input', function() {
+      calcularTotal();
+    });
+
+    function calcularTotal() {
+      const valor = parseFloat($('#valor').val()) || 0;
+      const desconto = parseFloat($('#desconto').val()) || 0;
+      const acrescimo = parseFloat($('#acrescimo').val()) || 0;
+      const total = (valor - desconto + acrescimo).toFixed(2);
+      $('#valorapagar').val(total);
+    }
+  });
+</script>
+
   <!-- jQuery -->
   <script src="plugins/jquery/jquery.min.js"></script>
   <!-- jQuery UI 1.11.4 -->
