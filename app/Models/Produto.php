@@ -23,6 +23,12 @@ class Produto extends Model
     'user_upd',
     'data_upd',
 ];
+
+public function produto()
+{
+    return $this->belongsTo(Produto::class, 'produto_id', 'idproduto');
+}
+
 public function userCriador()
 {
     return $this->belongsTo(\App\Models\User::class, 'user_ins');

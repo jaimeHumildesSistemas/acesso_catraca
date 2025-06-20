@@ -30,6 +30,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+ <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 
 </head>
@@ -198,7 +199,7 @@
           <div class="info">
             <a href="#" class="d-block">{{ Auth::user()->name }}</a>
 
-          </div>
+          </div>3
         </div>
 
         <!-- SidebarSearch Form -->
@@ -393,38 +394,72 @@
           </button>
         </div>
 
+         <!-- Modal -->
+<!-- Modal -->
+<div class="modal fade" id="modalQrCode" tabindex="-1" aria-labelledby="modalQrCodeLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="{{ route('qrcode.gerar') }}">
+      @csrf
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalQrCodeLabel">Gerar QR Code para Produto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar">X</button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="produto_id" class="form-label">Selecione o Produto</label>
+            <select name="produto_id" id="produto_id" class="form-control" required>
+              <option value="" disabled selected>Escolha um produto</option>
+              @foreach ($produtos as $produto)
+                <option value="{{ $produto->idproduto }}">{{ $produto->descricao }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Gerar QR Code</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
-
-
+<!-- Fim Modal -->
         <table id="example2" class="table table-bordered table-hover">
           <thead>
             <tr>
-              <th>Imagem</th>
+              <th>QRcode</th>
               <th>Status</th>
+              <th>Usuario</th>
+              <th>Produto</th>
+              <th>valor</th>
               <th>Data de Uso</th>
               <th>Criado em</th>
             </tr>
           </thead>
-          <tbody>
-            @foreach ($qrcodes as $qr)
-          <tr>
-            <td>
-            
-            <button class="btn-custom" onclick="imprimirQRCode('qrcode-{{ $qr->id }}')">Imprimir</button>
-            </td>
-            <td>
-            @if ($qr->used_at)
+        <tbody>
+  @foreach ($qrcodes as $qr)
+    <tr>
+      <td>
+        <button class="btn-custom" onclick="imprimirQRCode('qrcode-{{ $qr->id }}')">Imprimir</button>
+      </td>
+      <td>
+        @if ($qr->used_at)
           <span class="badge badge-danger">Usado</span>
         @else
           <span class="badge badge-success">Disponível</span>
         @endif
-            </td>
-            <td>{{ optional($qr->used_at)->format('d/m/Y H:i') ?? '---' }}</td>
-            <td>{{ optional($qr->created_at)->format('d/m/Y H:i') ?? '---' }}</td>
-          </tr>
-      @endforeach
+      </td>
+      <td>{{ $qr->user->name ?? '---' }}</td>
+      <td>{{ $qr->produto->descricao ?? '---' }}</td>
+      <td>R$ {{ number_format($qr->produto->valor ?? 0, 2, ',', '.') }}</td>
+      <td>{{ $qr->used_at ? \Carbon\Carbon::parse($qr->used_at)->format('d/m/Y H:i') : '---' }}</td>
+      <td>{{ $qr->created_at ? $qr->created_at->format('d/m/Y H:i') : '---' }}</td>
+    </tr>
+  @endforeach
+</tbody>
 
-          </tbody>
         </table>
     </div>
 
@@ -458,7 +493,20 @@
   </aside>
   <!-- /.control-sidebar -->
   </div>
+
+  <script>
+  // Se você tiver vários botões e quiser passar o ID do produto para o select do modal
+document.querySelectorAll('.botao-produto').forEach(botao => {
+  botao.addEventListener('click', function () {
+    const produtoId = this.dataset.produtoId;
+    document.querySelector('#produto_id').value = produtoId;
+  });
+});
+</script>
   <!-- ./wrapper -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
   <!-- DataTables Config -->
   <script>
     $(function () {
