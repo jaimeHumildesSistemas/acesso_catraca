@@ -10,6 +10,7 @@ use App\Http\Controllers\FilialController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\FormaPagamentoController;
 use App\Http\Controllers\CaixaHeaderController;
+use App\Models\CaixaHeader;  // CORRETO
 
 // ROTA DE LOGIN
 Route::get('/login', [LoginController::class, 'login'])->name('login');
@@ -44,16 +45,15 @@ Route::middleware(['auth'])->group(function () {
         return $response->json();
     });
 
-
-     // Forma de pagamento
-    Route::get('/formapagamento.index', [QRCodeController::class, 'index'])->name('formapagamento.index');
+    // Forma de pagamento (corrigido para rota REST padrão)
+    Route::get('/formapagamento', [FormaPagamentoController::class, 'index'])->name('formapagamento.index');
 
     // Cadastros
     Route::resource('filiais', FilialController::class);
     Route::resource('produtos', ProdutoController::class);
     Route::resource('formapagamento', FormaPagamentoController::class);
 
-    // Rotas do CaixaHeader
+    // Rotas do CaixaHeader (CRUD limitado)
     Route::resource('caixa_header', CaixaHeaderController::class)->only(['index', 'show', 'create', 'store']);
 
     // Rotas para abertura e fechamento de caixa
@@ -62,4 +62,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/caixa/fechar', [CaixaHeaderController::class, 'fechar'])->name('caixa_header.fechar');
     Route::post('/caixa/fechar', [CaixaHeaderController::class, 'fecharStore'])->name('caixa_header.fechar.store');
+
+    // Rota para verificar se o caixa está aberto (usando whereNull('datafechamento'))
+    Route::get('/api/verificar-caixa-aberto', function () {
+        $temCaixaAberto = CaixaHeader::whereNull('datafechamento')->exists();
+
+        return response()->json(['aberto' => $temCaixaAberto]);
+    });
+
 });

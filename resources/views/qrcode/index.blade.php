@@ -30,7 +30,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 
 </head>
@@ -389,43 +389,62 @@
         </div>
 
         <div class="text-end my-3">
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalQrCode">
+          <button type="button" id="btnAbrirModalQrCode" class="btn btn-primary">
             <i class="bi bi-plus-circle"></i> Gerar Novo QR Code
           </button>
+
         </div>
 
-         <!-- Modal -->
-<!-- Modal -->
-<div class="modal fade" id="modalQrCode" tabindex="-1" aria-labelledby="modalQrCodeLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form method="POST" action="{{ route('qrcode.gerar') }}">
-      @csrf
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalQrCodeLabel">Gerar QR Code para Produto</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar">X</button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="produto_id" class="form-label">Selecione o Produto</label>
-            <select name="produto_id" id="produto_id" class="form-control" required>
-              <option value="" disabled selected>Escolha um produto</option>
-              @foreach ($produtos as $produto)
-                <option value="{{ $produto->idproduto }}">{{ $produto->descricao }}</option>
-              @endforeach
-            </select>
+        <!-- Modal -->
+        <!-- Modal -->
+        <div class="modal fade" id="modalQrCode" tabindex="-1" aria-labelledby="modalQrCodeLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <form method="POST" action="{{ route('qrcode.gerar') }}">
+              @csrf
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modalQrCodeLabel">Gerar QR Code para Produto</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar">X</button>
+                </div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label for="produto_id" class="form-label">Selecione o Produto</label>
+                    <select name="produto_id" id="produto_id" class="form-control" required>
+                      <option value="" disabled selected>Escolha um produto</option>
+                      @foreach ($produtos as $produto)
+              <option value="{{ $produto->idproduto }}">{{ $produto->descricao }}</option>
+            @endforeach
+                    </select>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-success">Gerar QR Code</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-success">Gerar QR Code</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        </div>
+<!-- Modal de aviso caixa não aberto -->
+<div class="modal fade" id="modalAvisoCaixa" tabindex="-1" aria-labelledby="modalAvisoCaixaLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAvisoCaixaLabel">Aviso</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
       </div>
-    </form>
+      <div class="modal-body">
+        Não existe caixa aberto ainda.
+      </div>
+      <div class="modal-footer">
+        <a href="{{ url('caixa/abrir') }}" class="btn btn-success">Abrir Caixa</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- Fim Modal -->
+        <!-- Fim Modal -->
         <table id="example2" class="table table-bordered table-hover">
           <thead>
             <tr>
@@ -438,27 +457,27 @@
               <th>Criado em</th>
             </tr>
           </thead>
-        <tbody>
-  @foreach ($qrcodes as $qr)
-    <tr>
-      <td>
-        <button class="btn-custom" onclick="imprimirQRCode('qrcode-{{ $qr->id }}')">Imprimir</button>
-      </td>
-      <td>
-        @if ($qr->used_at)
+          <tbody>
+            @foreach ($qrcodes as $qr)
+          <tr>
+            <td>
+            <button class="btn-custom" onclick="imprimirQRCode('qrcode-{{ $qr->id }}')">Imprimir</button>
+            </td>
+            <td>
+            @if ($qr->used_at)
           <span class="badge badge-danger">Usado</span>
         @else
           <span class="badge badge-success">Disponível</span>
         @endif
-      </td>
-      <td>{{ $qr->user->name ?? '---' }}</td>
-      <td>{{ $qr->produto->descricao ?? '---' }}</td>
-      <td>R$ {{ number_format($qr->produto->valor ?? 0, 2, ',', '.') }}</td>
-      <td>{{ $qr->used_at ? \Carbon\Carbon::parse($qr->used_at)->format('d/m/Y H:i') : '---' }}</td>
-      <td>{{ $qr->created_at ? $qr->created_at->format('d/m/Y H:i') : '---' }}</td>
-    </tr>
-  @endforeach
-</tbody>
+            </td>
+            <td>{{ $qr->user->name ?? '---' }}</td>
+            <td>{{ $qr->produto->descricao ?? '---' }}</td>
+            <td>R$ {{ number_format($qr->produto->valor ?? 0, 2, ',', '.') }}</td>
+            <td>{{ $qr->used_at ? \Carbon\Carbon::parse($qr->used_at)->format('d/m/Y H:i') : '---' }}</td>
+            <td>{{ $qr->created_at ? $qr->created_at->format('d/m/Y H:i') : '---' }}</td>
+          </tr>
+      @endforeach
+          </tbody>
 
         </table>
     </div>
@@ -495,16 +514,16 @@
   </div>
 
   <script>
-  // Se você tiver vários botões e quiser passar o ID do produto para o select do modal
-document.querySelectorAll('.botao-produto').forEach(botao => {
-  botao.addEventListener('click', function () {
-    const produtoId = this.dataset.produtoId;
-    document.querySelector('#produto_id').value = produtoId;
-  });
-});
-</script>
+    // Se você tiver vários botões e quiser passar o ID do produto para o select do modal
+    document.querySelectorAll('.botao-produto').forEach(botao => {
+      botao.addEventListener('click', function () {
+        const produtoId = this.dataset.produtoId;
+        document.querySelector('#produto_id').value = produtoId;
+      });
+    });
+  </script>
   <!-- ./wrapper -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
   <!-- DataTables Config -->
@@ -553,6 +572,27 @@ document.querySelectorAll('.botao-produto').forEach(botao => {
     `);
       printWindow.document.close();
     }
+    $(document).ready(function() {
+  $('#btnAbrirModalQrCode').click(function(e) {
+    e.preventDefault();
+
+    $.ajax({
+      url: '/api/verificar-caixa-aberto',
+      method: 'GET',
+      success: function(response) {
+        if(response.aberto) {
+          $('#modalQrCode').modal('show');
+        } else {
+          $('#modalAvisoCaixa').modal('show');
+        }
+      },
+      error: function() {
+        alert('Erro ao verificar o caixa. Tente novamente.');
+      }
+    });
+  });
+});
+
   </script>
   <!-- jQuery -->
   <script src="plugins/jquery/jquery.min.js"></script>
@@ -591,7 +631,7 @@ document.querySelectorAll('.botao-produto').forEach(botao => {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script src="{{ asset('js/modal_qrcode.js?v=1.01') }}"></script>
-  
+
 </body>
 
 </html>
